@@ -1,6 +1,5 @@
 package br.com.stackoverflowclone.model;
 
-import br.com.stackoverflowclone.model.ids.AnswerId;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -10,8 +9,13 @@ import java.time.LocalDateTime;
 @Data
 public class Answer {
 
-    @EmbeddedId
-    private AnswerId id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+    @OneToOne
+    private User user;
+    @ManyToOne
+    private Question question;
     private String comment;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

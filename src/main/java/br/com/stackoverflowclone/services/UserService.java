@@ -1,13 +1,20 @@
 package br.com.stackoverflowclone.services;
 
-import br.com.stackoverflowclone.dto.UserDTO;
 import br.com.stackoverflowclone.exceptions.UserNotFoundException;
 import br.com.stackoverflowclone.model.User;
 import br.com.stackoverflowclone.repositories.UserRepository;
+import br.com.stackoverflowclone.repositories.operations.user.UserCreate;
+import br.com.stackoverflowclone.repositories.operations.user.UserUpdate;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.criteria.Predicate;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class UserService {
@@ -18,14 +25,14 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User createUser(UserDTO userDTO) {
+    public User createUser(UserCreate userCreate) {
         User user = new User();
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
         user.setEnabled(true);
-        user.setBirthday(userDTO.getBirthday());
-        user.setEmail(userDTO.getEmail());
-        user.setName(userDTO.getName());
+        user.setBirthday(userCreate.getBirthday());
+        user.setEmail(userCreate.getEmail());
+        user.setName(userCreate.getName());
         return this.userRepository.save(user);
     }
 
@@ -33,11 +40,32 @@ public class UserService {
         return this.userRepository.findAll();
     }
 
-    public User updateUser(Long id, UserDTO userDTO) {
-        User user = this.userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
+    public User updateUser(Long id, UserUpdate userUpdate) {
+        User user = this.userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
         user.setUpdatedAt(LocalDateTime.now());
-        user.setBirthday(userDTO.getBirthday());
-        user.setName(userDTO.getName());
+        user.setBirthday(userUpdate.getBirthday());
+        user.setName(userUpdate.getName());
+        user.setEnabled(userUpdate.getEnabled());
         return this.userRepository.save(user);
+    }
+
+    public List<User> findAll(String email, String name, LocalDate birthday, Pageable pageable) {
+        return this.userRepository.findAll((Specification<User>) (root, query, builder) -> {
+            Predicate predicate = builder.conjunction();
+            if(StringUtils.isNotEmpty(email)) {
+                predicate = builder.and(predicate, builder.equal(root.get("email"), email));
+            }
+            if(StringUtils.isNotEmpty(name)) {
+                predicate = builder.and(predicate, builder.like(root.get("name"), "%" + name + "%"));
+            }
+            if(Objects.nonNull(birthday)) {
+                predicate = builder.and(predicate, builder.equal(root.get("birthday"), birthday));
+            }
+            return predicate;
+        }, pageable).getContent();
+    }
+
+    public User findById(Long userId) {
+        return this.userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
     }
 }
