@@ -28,7 +28,7 @@ public class ErrorHandler {
     @ResponseBody
     public ValidationErrorResponse onUserNotFoundException(UserNotFoundException e) {
         ValidationErrorResponse error = new ValidationErrorResponse();
-        error.getErrors().add(new Error("userId", "userId " + e.getUserId() + " não encontrado"));
+        error.getErrors().add(new Error("userId", "userId [" + e.getUserId() + "] não encontrado"));
         return error;
     }
 
@@ -37,7 +37,7 @@ public class ErrorHandler {
     @ResponseBody
     public ValidationErrorResponse onQuestionNotFoundException(QuestionNotFoundException e) {
         ValidationErrorResponse error = new ValidationErrorResponse();
-        error.getErrors().add(new Error("questionId", "questionId " + e.getQuestionId() + " não encontrado"));
+        error.getErrors().add(new Error("questionId", "questionId [" + e.getQuestionId() + "] não encontrado"));
         return error;
     }
 }

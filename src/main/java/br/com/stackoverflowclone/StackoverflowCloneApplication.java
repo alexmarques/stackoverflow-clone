@@ -33,38 +33,38 @@ public class StackoverflowCloneApplication {
         SpringApplication.run(StackoverflowCloneApplication.class, args);
     }
 
-    @Bean
-    public CommandLineRunner preencherUsuarios(UserRepository userRepository,
-                                               QuestionRepository questionRepository,
-                                               FlagRepository flagRepository) {
-        return (args) -> {
-            for(int i = 0; i < 20; i++) {
-                User user = new User();
-                user.setBirthday(LocalDate.now());
-                user.setEmail(i + "email@email.com");
-                user.setCreatedAt(LocalDateTime.now());
-                user.setUpdatedAt(LocalDateTime.now());
-                user.setEnabled(true);
-                user.setName("Usuario"+i);
-                userRepository.save(user);
-            }
-
-            for(int i = 1; i < 10; i++) {
-                Question question = new Question();
-                question.setUser(userRepository.findById(Integer.valueOf(i).longValue()).get());
-                Flag flag = new Flag();
-                flag.setCreatedAt(LocalDateTime.now());
-                flag.setUpdatedAt(LocalDateTime.now());
-                flag.setEnabled(Boolean.TRUE);
-                flag.setDescription("flag"+i);
-                Flag savedFlag = flagRepository.save(flag);
-                question.setFlags(Arrays.asList(savedFlag));
-                question.setComment("comment " + i);
-                question.setResolved(Boolean.FALSE);
-                question.setCreatedAt(LocalDateTime.now());
-                question.setUpdatedAt(LocalDateTime.now());
-                questionRepository.save(question);
-            }
-        };
-    }
+//    @Bean
+//    public CommandLineRunner preencherUsuarios(UserRepository userRepository,
+//                                               QuestionRepository questionRepository,
+//                                               FlagRepository flagRepository) {
+//        return (args) -> {
+//            for(int i = 0; i < 20; i++) {
+//                User user = new User();
+//                user.setBirthday(LocalDate.now());
+//                user.setEmail(i + "email@email.com");
+//                user.setCreatedAt(LocalDateTime.now());
+//                user.setUpdatedAt(LocalDateTime.now());
+//                user.setEnabled(true);
+//                user.setName("Usuario"+i);
+//                userRepository.save(user);
+//            }
+//
+//            for(int i = 1; i < 10; i++) {
+//                Question question = new Question();
+//                question.setUser(userRepository.findById(Integer.valueOf(i).longValue()).get());
+//                Flag flag = new Flag();
+//                flag.setCreatedAt(LocalDateTime.now());
+//                flag.setUpdatedAt(LocalDateTime.now());
+//                flag.setEnabled(Boolean.TRUE);
+//                flag.setDescription("flag"+i);
+//                Flag savedFlag = flagRepository.save(flag);
+//                question.setFlags(Arrays.asList(savedFlag));
+//                question.setComment("comment " + i);
+//                question.setResolved(Boolean.FALSE);
+//                question.setCreatedAt(LocalDateTime.now());
+//                question.setUpdatedAt(LocalDateTime.now());
+//                questionRepository.save(question);
+//            }
+//        };
+//    }
 }

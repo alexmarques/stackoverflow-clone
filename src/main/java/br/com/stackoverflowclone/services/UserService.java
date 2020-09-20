@@ -1,6 +1,8 @@
 package br.com.stackoverflowclone.services;
 
 import br.com.stackoverflowclone.exceptions.UserNotFoundException;
+import br.com.stackoverflowclone.model.AnswerVote;
+import br.com.stackoverflowclone.model.Question;
 import br.com.stackoverflowclone.model.User;
 import br.com.stackoverflowclone.repositories.UserRepository;
 import br.com.stackoverflowclone.repositories.operations.user.UserCreate;
@@ -20,9 +22,15 @@ import java.util.Objects;
 public class UserService {
 
     private UserRepository userRepository;
+    private AnswerVoteService answerVoteService;
+    private UserReputationService userReputationService;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository,
+                       AnswerVoteService answerVoteService,
+                       UserReputationService userReputationService) {
         this.userRepository = userRepository;
+        this.answerVoteService = answerVoteService;
+        this.userReputationService = userReputationService;
     }
 
     public User createUser(UserCreate userCreate) {
