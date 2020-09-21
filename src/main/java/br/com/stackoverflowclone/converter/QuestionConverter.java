@@ -1,7 +1,7 @@
 package br.com.stackoverflowclone.converter;
 
-import br.com.stackoverflowclone.dto.QuestionResponseDTO;
 import br.com.stackoverflowclone.model.Question;
+import br.com.stackoverflowclone.response.QuestionResponseDTO;
 
 public class QuestionConverter {
 

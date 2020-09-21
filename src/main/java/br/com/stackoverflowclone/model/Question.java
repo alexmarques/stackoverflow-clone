@@ -1,6 +1,8 @@
 package br.com.stackoverflowclone.model;
 
 import lombok.Data;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -19,7 +21,8 @@ public class Question {
     private User user;
     @OneToMany(fetch = FetchType.LAZY)
     private List<Flag> flags = new ArrayList<>();
-    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "question")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Answer> answers;
     @NotBlank
     private String comment;

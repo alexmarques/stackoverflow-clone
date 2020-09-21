@@ -1,4 +1,4 @@
-package br.com.stackoverflowclone.repositories.operations.answer;
+package br.com.stackoverflowclone.request;
 
 import lombok.Data;
 

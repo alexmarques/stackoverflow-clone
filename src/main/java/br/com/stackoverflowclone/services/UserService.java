@@ -1,12 +1,12 @@
 package br.com.stackoverflowclone.services;
 
+import br.com.stackoverflowclone.converter.UserConverter;
 import br.com.stackoverflowclone.exceptions.UserNotFoundException;
-import br.com.stackoverflowclone.model.AnswerVote;
-import br.com.stackoverflowclone.model.Question;
 import br.com.stackoverflowclone.model.User;
 import br.com.stackoverflowclone.repositories.UserRepository;
-import br.com.stackoverflowclone.repositories.operations.user.UserCreate;
-import br.com.stackoverflowclone.repositories.operations.user.UserUpdate;
+import br.com.stackoverflowclone.request.UserCreate;
+import br.com.stackoverflowclone.request.UserUpdate;
+import br.com.stackoverflowclone.response.UserResponseDTO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -17,23 +17,18 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
 
     private UserRepository userRepository;
-    private AnswerVoteService answerVoteService;
-    private UserReputationService userReputationService;
 
-    public UserService(UserRepository userRepository,
-                       AnswerVoteService answerVoteService,
-                       UserReputationService userReputationService) {
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.answerVoteService = answerVoteService;
-        this.userReputationService = userReputationService;
     }
 
-    public User createUser(UserCreate userCreate) {
+    public UserResponseDTO createUser(UserCreate userCreate) {
         User user = new User();
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
@@ -41,23 +36,25 @@ public class UserService {
         user.setBirthday(userCreate.getBirthday());
         user.setEmail(userCreate.getEmail());
         user.setName(userCreate.getName());
-        return this.userRepository.save(user);
+        User userSaved = this.userRepository.save(user);
+        return UserConverter.convert(userSaved);
     }
 
     public List<User> findAll() {
         return this.userRepository.findAll();
     }
 
-    public User updateUser(Long id, UserUpdate userUpdate) {
+    public UserResponseDTO updateUser(Long id, UserUpdate userUpdate) {
         User user = this.userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
         user.setUpdatedAt(LocalDateTime.now());
         user.setBirthday(userUpdate.getBirthday());
         user.setName(userUpdate.getName());
         user.setEnabled(userUpdate.getEnabled());
-        return this.userRepository.save(user);
+        User userSaved = this.userRepository.save(user);
+        return UserConverter.convert(userSaved);
     }
 
-    public List<User> findAll(String email, String name, LocalDate birthday, Pageable pageable) {
+    public List<UserResponseDTO> findAll(String email, String name, LocalDate birthday, Pageable pageable) {
         return this.userRepository.findAll((Specification<User>) (root, query, builder) -> {
             Predicate predicate = builder.conjunction();
             if(StringUtils.isNotEmpty(email)) {
@@ -70,7 +67,10 @@ public class UserService {
                 predicate = builder.and(predicate, builder.equal(root.get("birthday"), birthday));
             }
             return predicate;
-        }, pageable).getContent();
+        }, pageable).getContent()
+                .stream()
+                .map(UserConverter::convert)
+                .collect(Collectors.toList());
     }
 
     public User findById(Long userId) {

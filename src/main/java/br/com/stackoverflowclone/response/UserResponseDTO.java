@@ -1,21 +1,21 @@
-package br.com.stackoverflowclone.dto;
+package br.com.stackoverflowclone.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
-public class QuestionResponseDTO {
-    private Long questionId;
+public class UserResponseDTO {
     private Long userId;
-    private List<String> flags = new ArrayList<>();
-    private String comment;
+    private String name;
+    private String email;
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    private LocalDate birthday;
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     private LocalDateTime createdAt;
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     private LocalDateTime updatedAt;
-    private Boolean resolved;
+    private Boolean enabled;
 }

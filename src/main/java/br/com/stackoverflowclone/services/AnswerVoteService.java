@@ -16,6 +16,6 @@ public class AnswerVoteService {
     }
 
     public List<AnswerVote> findBy(Long questionId, Long userId) {
-        return this.answerVoteRepository.findAllByIdUserAndIdAnswer(userId, questionId);
+        return this.answerVoteRepository.findAllByUserIdAndQuestionId(userId, questionId);
     }
 }

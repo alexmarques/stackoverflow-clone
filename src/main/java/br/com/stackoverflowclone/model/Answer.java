@@ -15,7 +15,7 @@ public class Answer {
     private Long id;
     @OneToOne
     private User user;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private Question question;
     @OneToMany(orphanRemoval = true)
     private List<AnswerVote> votes;

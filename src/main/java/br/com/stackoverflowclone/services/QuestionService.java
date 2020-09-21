@@ -1,21 +1,20 @@
 package br.com.stackoverflowclone.services;
 
 import br.com.stackoverflowclone.converter.QuestionConverter;
-import br.com.stackoverflowclone.dto.QuestionResponseDTO;
 import br.com.stackoverflowclone.exceptions.QuestionNotFoundException;
-import br.com.stackoverflowclone.model.AnswerVote;
 import br.com.stackoverflowclone.model.Flag;
 import br.com.stackoverflowclone.model.Question;
 import br.com.stackoverflowclone.model.User;
 import br.com.stackoverflowclone.repositories.QuestionRepository;
-import br.com.stackoverflowclone.repositories.UserReputationRepository;
-import br.com.stackoverflowclone.repositories.operations.question.QuestionCreate;
-import br.com.stackoverflowclone.repositories.operations.question.QuestionUpdate;
+import br.com.stackoverflowclone.request.QuestionCreate;
+import br.com.stackoverflowclone.request.QuestionUpdate;
+import br.com.stackoverflowclone.response.QuestionResponseDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class QuestionService {
@@ -35,8 +34,11 @@ public class QuestionService {
         this.userReputationService = userReputationService;
     }
 
-    public List<Question> findAll() {
-        return this.questionRepository.findAll();
+    public List<QuestionResponseDTO> findAll() {
+        return this.questionRepository.findAll()
+                .stream()
+                .map(QuestionConverter::convert)
+                .collect(Collectors.toList());
     }
 
     public QuestionResponseDTO save(QuestionCreate questionCreate) {

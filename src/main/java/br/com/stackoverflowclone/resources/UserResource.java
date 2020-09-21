@@ -1,10 +1,13 @@
 package br.com.stackoverflowclone.resources;
 
-import br.com.stackoverflowclone.model.User;
-import br.com.stackoverflowclone.repositories.operations.user.UserCreate;
-import br.com.stackoverflowclone.repositories.operations.user.UserUpdate;
+import br.com.stackoverflowclone.request.UserCreate;
+import br.com.stackoverflowclone.request.UserReputationCreate;
+import br.com.stackoverflowclone.request.UserReputationUpdate;
+import br.com.stackoverflowclone.request.UserUpdate;
+import br.com.stackoverflowclone.response.UserReputationResponseDTO;
+import br.com.stackoverflowclone.response.UserResponseDTO;
+import br.com.stackoverflowclone.services.UserReputationService;
 import br.com.stackoverflowclone.services.UserService;
-import io.swagger.annotations.Api;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
@@ -13,22 +16,21 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 
-
 @RestController
-@RequestMapping(value = "/users")
-@Api("Users")
 public class UserResource {
 
     private static final String DATE_PATTERN = "dd/MM/yyyy";
 
-    private UserService userService;
+    private final UserService userService;
+    private final UserReputationService userReputationService;
 
-    public UserResource(UserService userService) {
+    public UserResource(UserService userService, UserReputationService userReputationService) {
         this.userService = userService;
+        this.userReputationService = userReputationService;
     }
 
-    @GetMapping
-    public List<User> findAll(@RequestParam(required = false) String name,
+    @GetMapping("/users")
+    public List<UserResponseDTO> findAllUsers(@RequestParam(required = false) String name,
                               @RequestParam(required = false) String email,
                               @RequestParam(required = false)
                               @DateTimeFormat(pattern = DATE_PATTERN) LocalDate birthday,
@@ -36,14 +38,31 @@ public class UserResource {
         return this.userService.findAll(email, name, birthday, pageable);
     }
 
-    @PostMapping
-    public User create(@Validated @RequestBody UserCreate user) {
+    @PostMapping("/users")
+    public UserResponseDTO createUser(@Validated @RequestBody UserCreate user) {
         return this.userService.createUser(user);
     }
 
-    @PutMapping("/{id}")
-    public User update(@PathVariable Long id, @Validated @RequestBody UserUpdate user) {
+    @PutMapping("/users/{id}")
+    public UserResponseDTO updateUSer(@PathVariable Long id, @Validated @RequestBody UserUpdate user) {
         return this.userService.updateUser(id, user);
+    }
+
+    @PostMapping("/users/{userId}/reputation")
+    public UserReputationResponseDTO createUserReputation(@PathVariable Long userId,
+                                            @Validated @RequestBody UserReputationCreate userReputationCreate) {
+        return this.userReputationService.create(userId, userReputationCreate);
+    }
+
+    @GetMapping("/users/{userId}/reputation")
+    public UserReputationResponseDTO findUserReputation(@PathVariable Long userId) {
+        return this.userReputationService.findByUserId(userId);
+    }
+
+    @PutMapping("/users/{userId}/reputation")
+    public UserReputationResponseDTO updateUserReputation(@PathVariable Long userId,
+                                            @Validated @RequestBody UserReputationUpdate userReputationUpdate) {
+        return this.userReputationService.update(userId, userReputationUpdate);
     }
 
 }

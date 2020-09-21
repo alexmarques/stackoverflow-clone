@@ -24,7 +24,7 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler(UserNotFoundException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
     public ValidationErrorResponse onUserNotFoundException(UserNotFoundException e) {
         ValidationErrorResponse error = new ValidationErrorResponse();
@@ -33,7 +33,7 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler(QuestionNotFoundException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
     public ValidationErrorResponse onQuestionNotFoundException(QuestionNotFoundException e) {
         ValidationErrorResponse error = new ValidationErrorResponse();
