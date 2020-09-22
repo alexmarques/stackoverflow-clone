@@ -1,5 +1,6 @@
 package br.com.stackoverflowclone.handler;
 
+import br.com.stackoverflowclone.exceptions.AnswerNotFoundException;
 import br.com.stackoverflowclone.exceptions.QuestionNotFoundException;
 import br.com.stackoverflowclone.exceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -38,6 +39,15 @@ public class ErrorHandler {
     public ValidationErrorResponse onQuestionNotFoundException(QuestionNotFoundException e) {
         ValidationErrorResponse error = new ValidationErrorResponse();
         error.getErrors().add(new Error("questionId", "questionId [" + e.getQuestionId() + "] não encontrado"));
+        return error;
+    }
+
+    @ExceptionHandler(AnswerNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    public ValidationErrorResponse onQuestionNotFoundException(AnswerNotFoundException e) {
+        ValidationErrorResponse error = new ValidationErrorResponse();
+        error.getErrors().add(new Error("answerId", "answerId [" + e.getAnswerId() + "] não encontrado"));
         return error;
     }
 }

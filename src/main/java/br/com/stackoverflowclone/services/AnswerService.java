@@ -1,6 +1,7 @@
 package br.com.stackoverflowclone.services;
 
 import br.com.stackoverflowclone.converter.AnswerConverter;
+import br.com.stackoverflowclone.exceptions.AnswerNotFoundException;
 import br.com.stackoverflowclone.model.Answer;
 import br.com.stackoverflowclone.model.Question;
 import br.com.stackoverflowclone.model.User;
@@ -46,5 +47,9 @@ public class AnswerService {
         .stream()
         .map(AnswerConverter::convert)
         .collect(Collectors.toList());
+    }
+
+    public Answer findById(Long answerId) {
+        return this.answerRepository.findById(answerId).orElseThrow(() -> new AnswerNotFoundException(answerId));
     }
 }

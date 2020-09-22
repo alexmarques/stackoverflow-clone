@@ -1,8 +1,6 @@
 package br.com.stackoverflowclone.resources;
 
 import br.com.stackoverflowclone.request.UserCreate;
-import br.com.stackoverflowclone.request.UserReputationCreate;
-import br.com.stackoverflowclone.request.UserReputationUpdate;
 import br.com.stackoverflowclone.request.UserUpdate;
 import br.com.stackoverflowclone.response.UserReputationResponseDTO;
 import br.com.stackoverflowclone.response.UserResponseDTO;
@@ -48,21 +46,8 @@ public class UserResource {
         return this.userService.updateUser(id, user);
     }
 
-    @PostMapping("/users/{userId}/reputation")
-    public UserReputationResponseDTO createUserReputation(@PathVariable Long userId,
-                                            @Validated @RequestBody UserReputationCreate userReputationCreate) {
-        return this.userReputationService.create(userId, userReputationCreate);
-    }
-
     @GetMapping("/users/{userId}/reputation")
     public UserReputationResponseDTO findUserReputation(@PathVariable Long userId) {
         return this.userReputationService.findByUserId(userId);
     }
-
-    @PutMapping("/users/{userId}/reputation")
-    public UserReputationResponseDTO updateUserReputation(@PathVariable Long userId,
-                                            @Validated @RequestBody UserReputationUpdate userReputationUpdate) {
-        return this.userReputationService.update(userId, userReputationUpdate);
-    }
-
 }

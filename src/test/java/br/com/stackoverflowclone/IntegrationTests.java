@@ -1,10 +1,7 @@
 package br.com.stackoverflowclone;
 
 import br.com.stackoverflowclone.request.*;
-import br.com.stackoverflowclone.response.AnswerResponseDTO;
-import br.com.stackoverflowclone.response.QuestionResponseDTO;
-import br.com.stackoverflowclone.response.UserReputationResponseDTO;
-import br.com.stackoverflowclone.response.UserResponseDTO;
+import br.com.stackoverflowclone.response.*;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -12,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
@@ -22,7 +20,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = StackoverflowCloneApplication.class)
+@ComponentScan("br.com.stackoverflowclone")
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class IntegrationTests {
@@ -40,10 +39,10 @@ class IntegrationTests {
         UserResponseDTO alan = testCreateUser(LocalDate.of(1985, 8, 10), "alan@email.com", "Alan");
         QuestionResponseDTO alexQuestion = testCreateQuestion(alex.getUserId(), "questao alex", Arrays.asList("spring"));
         QuestionResponseDTO alanQuestion = testCreateQuestion(alan.getUserId(), "questao alan", Arrays.asList("spring"));
-        testCreateAnswer("resposta 1", alexQuestion.getQuestionId(), john.getUserId());
-        testCreateAnswer("responta 2", alanQuestion.getQuestionId(), john.getUserId());
-        UserReputationResponseDTO johnReputation = testCreateUserReputation(john.getUserId(), 5);
-        updateUserReputation(john.getUserId(), 5);
+        AnswerResponseDTO respostaJohn = testCreateAnswer("resposta 1", alexQuestion.getQuestionId(), john.getUserId());
+        AnswerResponseDTO segundaRepostaJohn = testCreateAnswer("responta 2", alanQuestion.getQuestionId(), john.getUserId());
+        testCreateVoteAnswer(alexQuestion.getQuestionId(), respostaJohn.getAnswerId(), john.getUserId(), 5);
+        testCreateVoteAnswer(alanQuestion.getQuestionId(), segundaRepostaJohn.getAnswerId(), john.getUserId(), 5);
         deleteQuestion(alanQuestion.getQuestionId());
         testRecalculoUserReputation(john.getUserId(), 5);
     }
@@ -101,24 +100,6 @@ class IntegrationTests {
         return response.getBody();
     }
 
-    private UserReputationResponseDTO testCreateUserReputation(Long userId, Integer score) {
-        UserReputationCreate userReputationCreate = new UserReputationCreate();
-        userReputationCreate.setScore(score);
-        String url = String.format("http://localhost:%s/users/%s/reputation", port, userId);
-        ResponseEntity<UserReputationResponseDTO> response =
-                this.testRestTemplate.postForEntity(url, userReputationCreate, UserReputationResponseDTO.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
-        return response.getBody();
-    }
-
-    private void updateUserReputation(Long userId, Integer score) {
-        UserReputationUpdate userReputationUpdate = new UserReputationUpdate();
-        userReputationUpdate.setScore(score);
-        String url = String.format("http://localhost:%s/users/%s/reputation", port, userId);
-        this.testRestTemplate.put(url, userReputationUpdate);
-    }
-
     private void deleteQuestion(Long questionId) {
         String url = String.format("http://localhost:%s/questions/%s", port, questionId);
         this.testRestTemplate.delete(url);
@@ -130,6 +111,45 @@ class IntegrationTests {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getScore()).isEqualTo(expected);
+    }
+
+    void createVoteAnswer(Long questionId, Long answerId, Long userId, Integer score) {
+        String url = String.format("http://localhost:%s/questions/%s/answers/%s/vote", port, questionId, answerId);
+        AnswerVoteCreate answerVoteCreate = new AnswerVoteCreate();
+        answerVoteCreate.setUserId(userId);
+        answerVoteCreate.setScore(score);
+        ResponseEntity<AnswerVoteResponseDTO> response = this.testRestTemplate.postForEntity(url, answerVoteCreate, AnswerVoteResponseDTO.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+    }
+
+    void updateVoteAnswer(Long questionId, Long answerId, Long userId, Integer score) {
+        String url = String.format("http://localhost:%s/questions/%s/answers/%s/vote", port, questionId, answerId);
+        AnswerVoteUpdate answerVoteUpdate = new AnswerVoteUpdate();
+        answerVoteUpdate.setUserId(userId);
+        answerVoteUpdate.setScore(score);
+        this.testRestTemplate.put(url, answerVoteUpdate);
+    }
+
+    AnswerVoteResponseDTO testCreateVoteAnswer(Long questionId, Long answerId, Long userId, Integer score) {
+//        String url = "http://localhost:" + port + "/questions/{questionId}/answers/{answerId}/vote";
+        String url = String.format("http://localhost:%s/questions/%s/answers/%s/vote", port, questionId, answerId);
+        AnswerVoteCreate answerVoteCreate = new AnswerVoteCreate();
+        answerVoteCreate.setUserId(userId);
+        answerVoteCreate.setScore(score);
+        ResponseEntity<AnswerVoteResponseDTO> response =
+                this.testRestTemplate.postForEntity(url, answerVoteCreate, AnswerVoteResponseDTO.class);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        return response.getBody();
+    }
+
+    void testUpdateVoteAnswer(Long questionId, Long answerId, Long userId, Integer score) {
+        String url = String.format("http://localhost:%s/questions/%s/answers/%s/vote", port, questionId, answerId);
+        AnswerVoteUpdate answerVoteUpdate = new AnswerVoteUpdate();
+        answerVoteUpdate.setUserId(userId);
+        answerVoteUpdate.setScore(score);
+        this.testRestTemplate.put(url, answerVoteUpdate);
     }
 
 }
