@@ -11,3 +11,7 @@ Após iniciado o container mysql, na raiz do projeto java, executar o comando:
 ```editorconfig
 mvn spring-boot:run
 ```
+
+# Problema Conhecidos
+
+Existe um problema entre o swagger e api pageable do spring, o swagger não exibe os campos de paginação quando vamos realizar a consulta, ao tentar executar uma exceção é lançada.
