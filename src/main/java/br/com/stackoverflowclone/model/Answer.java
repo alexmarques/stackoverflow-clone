@@ -15,7 +15,7 @@ import java.util.List;
 public class Answer {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     private Long id;
     @OneToOne
     private User user;

@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 public class Role {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String description;
     private LocalDateTime createdAt;

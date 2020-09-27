@@ -22,6 +22,7 @@ public class SpringFoxConfig extends WebMvcConfigurationSupport {
                 .paths(PathSelectors.any())
                 .build();
     }
+    
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {

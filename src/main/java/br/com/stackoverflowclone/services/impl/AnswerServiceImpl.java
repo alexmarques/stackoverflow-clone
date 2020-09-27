@@ -13,6 +13,7 @@ import br.com.stackoverflowclone.services.QuestionService;
 import br.com.stackoverflowclone.services.UserService;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,6 +34,7 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     @Override
+    @Transactional
     public AnswerResponseDTO create(AnswerCreate answerCreate) {
         User user = this.userService.findById(answerCreate.getUserId());
         Question question = this.questionService.findById(answerCreate.getQuestionId());

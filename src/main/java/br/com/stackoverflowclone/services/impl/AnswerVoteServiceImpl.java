@@ -15,6 +15,7 @@ import br.com.stackoverflowclone.services.UserReputationService;
 import br.com.stackoverflowclone.services.UserService;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -39,6 +40,7 @@ public class AnswerVoteServiceImpl implements AnswerVoteService {
     }
 
     @Override
+    @Transactional
     public AnswerVoteResponseDTO createVoteAnswer(Question question, Answer answer, AnswerVoteCreate answerVoteCreate) {
         AnswerVoteId answerVoteId = createVoteAnswerId(question, answer, answerVoteCreate.getUserId());
         AnswerVote answerVote = new AnswerVote();

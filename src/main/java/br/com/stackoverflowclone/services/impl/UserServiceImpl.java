@@ -74,6 +74,7 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public User findById(Long userId) {
         return this.userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
     }
