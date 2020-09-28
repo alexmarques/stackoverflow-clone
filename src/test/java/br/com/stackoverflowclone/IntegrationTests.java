@@ -33,7 +33,7 @@ class IntegrationTests {
     private int port;
 
     @Test
-    void testUserReputation() {
+    void deveAtualizarAhReputacaoDoUsuarioQuandoAhPerguntaForDeletada() {
         UserResponseDTO alex = testCreateUser(LocalDate.of(1985, 8, 10), "alex@email.com", "Alex");
         UserResponseDTO john = testCreateUser(LocalDate.of(1985, 8, 10), "john@email.com", "John");
         UserResponseDTO alan = testCreateUser(LocalDate.of(1985, 8, 10), "alan@email.com", "Alan");
@@ -48,7 +48,7 @@ class IntegrationTests {
     }
 
     @Test
-    void testAllAnswersDeleted() {
+    void deveDeletarTodasAsRepostasQuandoAhQuestaoForDeletada() {
         UserResponseDTO jose = testCreateUser(LocalDate.of(1985, 8, 10), "jose@email.com", "Jose");
         UserResponseDTO rob = testCreateUser(LocalDate.of(1985, 8, 10), "rob@email.com", "Rob");
         UserResponseDTO ted = testCreateUser(LocalDate.of(1985, 8, 10), "ted@email.com", "Ted");
