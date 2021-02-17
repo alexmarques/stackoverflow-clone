@@ -5,7 +5,7 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class AnswerVoteUpdate {
+public class AnswerVoteUpdate implements AnswerVoteOperation {
     @NotNull
     private Long userId;
     @NotNull

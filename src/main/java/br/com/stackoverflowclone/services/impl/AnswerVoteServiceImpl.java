@@ -1,18 +1,20 @@
 package br.com.stackoverflowclone.services.impl;
 
 import br.com.stackoverflowclone.converter.AnswerVoteConverter;
+import br.com.stackoverflowclone.exceptions.UserNotFoundException;
 import br.com.stackoverflowclone.model.Answer;
 import br.com.stackoverflowclone.model.AnswerVote;
 import br.com.stackoverflowclone.model.Question;
 import br.com.stackoverflowclone.model.User;
 import br.com.stackoverflowclone.model.ids.AnswerVoteId;
 import br.com.stackoverflowclone.repositories.AnswerVoteRepository;
-import br.com.stackoverflowclone.request.AnswerVoteCreate;
+import br.com.stackoverflowclone.repositories.UserRepository;
+import br.com.stackoverflowclone.request.AnswerVoteOperation;
+import br.com.stackoverflowclone.request.AnswerVoteOperationCreate;
 import br.com.stackoverflowclone.request.AnswerVoteUpdate;
 import br.com.stackoverflowclone.response.AnswerVoteResponseDTO;
 import br.com.stackoverflowclone.services.AnswerVoteService;
-import br.com.stackoverflowclone.services.UserReputationService;
-import br.com.stackoverflowclone.services.UserService;
+import br.com.stackoverflowclone.services.CalculadorScoreService;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -23,15 +25,15 @@ import java.util.List;
 public class AnswerVoteServiceImpl implements AnswerVoteService {
 
     private final AnswerVoteRepository answerVoteRepository;
-    private final UserService userService;
-    private final UserReputationService userReputationService;
+    private final UserRepository userRepository;
+    private final CalculadorScoreService calculadorScoreService;
 
     public AnswerVoteServiceImpl(AnswerVoteRepository answerVoteRepository,
-                             UserService userService,
-                             UserReputationService userReputationService) {
+                                 UserRepository userRepository,
+                                 CalculadorScoreService calculadorScoreService) {
         this.answerVoteRepository = answerVoteRepository;
-        this.userService = userService;
-        this.userReputationService = userReputationService;
+        this.userRepository = userRepository;
+        this.calculadorScoreService = calculadorScoreService;
     }
 
     @Override
@@ -41,33 +43,29 @@ public class AnswerVoteServiceImpl implements AnswerVoteService {
 
     @Override
     @Transactional
-    public AnswerVoteResponseDTO createVoteAnswer(Question question, Answer answer, AnswerVoteCreate answerVoteCreate) {
-        AnswerVoteId answerVoteId = createVoteAnswerId(question, answer, answerVoteCreate.getUserId());
-        AnswerVote answerVote = new AnswerVote();
-        answerVote.setId(answerVoteId);
-        answerVote.setScore(answerVoteCreate.getScore());
-        answerVote.setCreatedAt(LocalDateTime.now());
-        answerVote.setUpdatedAt(LocalDateTime.now());
-        AnswerVote answerVoteSaved = this.answerVoteRepository.save(answerVote);
-        this.userReputationService.recalcularScore(answerVoteId.getUser(), answerVoteCreate.getScore());
-        return AnswerVoteConverter.convert(answerVoteSaved);
+    public AnswerVoteResponseDTO createVoteAnswer(Question question, Answer answer, AnswerVoteOperationCreate answerVoteCreate) {
+        return getAnswerVoteResponseDTO(question, answer, answerVoteCreate);
     }
 
     @Override
     public AnswerVoteResponseDTO updateVoteAnswer(Question question, Answer answer, AnswerVoteUpdate answerVoteUpdate) {
-        AnswerVoteId answerVoteId = createVoteAnswerId(question, answer, answerVoteUpdate.getUserId());
+        return getAnswerVoteResponseDTO(question, answer, answerVoteUpdate);
+    }
+
+    private AnswerVoteResponseDTO getAnswerVoteResponseDTO(Question question, Answer answer, AnswerVoteOperation answerVoteOperation) {
+        AnswerVoteId answerVoteId = createVoteAnswerId(question, answer, answerVoteOperation.getUserId());
         AnswerVote answerVote = new AnswerVote();
         answerVote.setId(answerVoteId);
-        answerVote.setScore(answerVoteUpdate.getScore());
+        answerVote.setScore(answerVoteOperation.getScore());
         answerVote.setCreatedAt(LocalDateTime.now());
         answerVote.setUpdatedAt(LocalDateTime.now());
         AnswerVote answerVoteSaved = this.answerVoteRepository.save(answerVote);
-        this.userReputationService.recalcularScore(answerVoteId.getUser(), answerVoteUpdate.getScore());
+        this.calculadorScoreService.recalcularScore(answerVoteId.getUser(), answerVoteOperation.getScore());
         return AnswerVoteConverter.convert(answerVoteSaved);
     }
 
     private AnswerVoteId createVoteAnswerId(Question question, Answer answer, Long userId) {
-        User user = this.userService.findById(userId);
+        User user = this.userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
         AnswerVoteId answerVoteId = new AnswerVoteId();
         answerVoteId.setUser(user);
         answerVoteId.setQuestion(question);

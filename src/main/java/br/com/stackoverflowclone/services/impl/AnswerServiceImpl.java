@@ -2,15 +2,17 @@ package br.com.stackoverflowclone.services.impl;
 
 import br.com.stackoverflowclone.converter.AnswerConverter;
 import br.com.stackoverflowclone.exceptions.AnswerNotFoundException;
+import br.com.stackoverflowclone.exceptions.QuestionNotFoundException;
+import br.com.stackoverflowclone.exceptions.UserNotFoundException;
 import br.com.stackoverflowclone.model.Answer;
 import br.com.stackoverflowclone.model.Question;
 import br.com.stackoverflowclone.model.User;
 import br.com.stackoverflowclone.repositories.AnswerRepository;
+import br.com.stackoverflowclone.repositories.QuestionRepository;
+import br.com.stackoverflowclone.repositories.UserRepository;
 import br.com.stackoverflowclone.request.AnswerCreate;
 import br.com.stackoverflowclone.response.AnswerResponseDTO;
 import br.com.stackoverflowclone.services.AnswerService;
-import br.com.stackoverflowclone.services.QuestionService;
-import br.com.stackoverflowclone.services.UserService;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -22,22 +24,27 @@ import java.util.stream.Collectors;
 public class AnswerServiceImpl implements AnswerService {
 
     private final AnswerRepository answerRepository;
-    private final UserService userService;
-    private final QuestionService questionService;
+    private final UserRepository userRepository;
+    private final QuestionRepository questionRepository;
 
     public AnswerServiceImpl(AnswerRepository answerRepository,
-                         UserService userService,
-                         QuestionService questionService) {
+                             UserRepository userRepository,
+                             QuestionRepository questionRepository) {
         this.answerRepository = answerRepository;
-        this.userService = userService;
-        this.questionService = questionService;
+        this.userRepository = userRepository;
+        this.questionRepository = questionRepository;
     }
 
     @Override
     @Transactional
     public AnswerResponseDTO create(AnswerCreate answerCreate) {
-        User user = this.userService.findById(answerCreate.getUserId());
-        Question question = this.questionService.findById(answerCreate.getQuestionId());
+
+        User user = this.userRepository.findById(answerCreate.getUserId())
+                .orElseThrow(() -> new UserNotFoundException(answerCreate.getUserId()));
+
+        Question question = this.questionRepository.findById(answerCreate.getQuestionId())
+                .orElseThrow(() -> new QuestionNotFoundException(answerCreate.getQuestionId()));
+
         Answer answer = new Answer();
         answer.setUser(user);
         answer.setQuestion(question);

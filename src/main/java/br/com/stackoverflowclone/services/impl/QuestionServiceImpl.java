@@ -9,9 +9,9 @@ import br.com.stackoverflowclone.repositories.QuestionRepository;
 import br.com.stackoverflowclone.request.QuestionCreate;
 import br.com.stackoverflowclone.request.QuestionUpdate;
 import br.com.stackoverflowclone.response.QuestionResponseDTO;
+import br.com.stackoverflowclone.services.CalculadorScoreService;
 import br.com.stackoverflowclone.services.FlagService;
 import br.com.stackoverflowclone.services.QuestionService;
-import br.com.stackoverflowclone.services.UserReputationService;
 import br.com.stackoverflowclone.services.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,16 +26,16 @@ public class QuestionServiceImpl implements QuestionService {
     private final QuestionRepository questionRepository;
     private final UserService userService;
     private final FlagService flagSerivce;
-    private final UserReputationService userReputationService;
+    private final CalculadorScoreService calculadorScoreService;
 
     public QuestionServiceImpl(QuestionRepository questionRepository,
-                           UserService userService,
-                           FlagService flagSerivce,
-                           UserReputationService userReputationService) {
+                               UserService userService,
+                               FlagService flagSerivce,
+                               CalculadorScoreService calculadorScoreService) {
         this.questionRepository = questionRepository;
         this.userService = userService;
         this.flagSerivce = flagSerivce;
-        this.userReputationService = userReputationService;
+        this.calculadorScoreService = calculadorScoreService;
     }
 
     @Override
@@ -81,7 +81,7 @@ public class QuestionServiceImpl implements QuestionService {
     public QuestionResponseDTO delete(Long id) {
         Question question = this.questionRepository.findById(id)
                 .orElseThrow(() -> new QuestionNotFoundException(id));
-        this.userReputationService.recalcularScore(question);
+        this.calculadorScoreService.recalcularScore(question);
         this.questionRepository.delete(question);
         return QuestionConverter.convert(question);
     }

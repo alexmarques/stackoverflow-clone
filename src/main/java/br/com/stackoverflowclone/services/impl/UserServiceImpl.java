@@ -78,5 +78,4 @@ public class UserServiceImpl implements UserService {
     public User findById(Long userId) {
         return this.userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
     }
-
 }

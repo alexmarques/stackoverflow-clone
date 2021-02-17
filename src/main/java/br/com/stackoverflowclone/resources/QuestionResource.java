@@ -63,7 +63,7 @@ public class QuestionResource {
     @PostMapping("/{questionId}/answers/{answerId}/vote")
     public AnswerVoteResponseDTO createVoteAnswer(@PathVariable Long questionId,
                                                   @PathVariable Long answerId,
-                                                  @Validated @RequestBody AnswerVoteCreate answerVoteCreate) {
+                                                  @Validated @RequestBody AnswerVoteOperationCreate answerVoteCreate) {
         Question question = this.questionService.findById(questionId);
         Answer answer = this.answerService.findById(answerId);
         return this.answerVoteService.createVoteAnswer(question, answer, answerVoteCreate);

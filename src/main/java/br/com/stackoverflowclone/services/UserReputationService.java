@@ -7,8 +7,6 @@ import br.com.stackoverflowclone.request.UserReputationUpdate;
 import br.com.stackoverflowclone.response.UserReputationResponseDTO;
 
 public interface UserReputationService {
-    void recalcularScore(User user, Integer score);
-    void recalcularScore(Question question);
     UserReputationResponseDTO create(Long userId, UserReputationCreate userReputationCreate);
     UserReputationResponseDTO findByUserId(Long userId);
     UserReputationResponseDTO update(Long userId, UserReputationUpdate userReputationUpdate);

@@ -115,7 +115,7 @@ class IntegrationTests {
 
     void createVoteAnswer(Long questionId, Long answerId, Long userId, Integer score) {
         String url = String.format("http://localhost:%s/questions/%s/answers/%s/vote", port, questionId, answerId);
-        AnswerVoteCreate answerVoteCreate = new AnswerVoteCreate();
+        AnswerVoteOperationCreate answerVoteCreate = new AnswerVoteOperationCreate();
         answerVoteCreate.setUserId(userId);
         answerVoteCreate.setScore(score);
         ResponseEntity<AnswerVoteResponseDTO> response = this.testRestTemplate.postForEntity(url, answerVoteCreate, AnswerVoteResponseDTO.class);
@@ -134,7 +134,7 @@ class IntegrationTests {
     AnswerVoteResponseDTO testCreateVoteAnswer(Long questionId, Long answerId, Long userId, Integer score) {
 //        String url = "http://localhost:" + port + "/questions/{questionId}/answers/{answerId}/vote";
         String url = String.format("http://localhost:%s/questions/%s/answers/%s/vote", port, questionId, answerId);
-        AnswerVoteCreate answerVoteCreate = new AnswerVoteCreate();
+        AnswerVoteOperationCreate answerVoteCreate = new AnswerVoteOperationCreate();
         answerVoteCreate.setUserId(userId);
         answerVoteCreate.setScore(score);
         ResponseEntity<AnswerVoteResponseDTO> response =
