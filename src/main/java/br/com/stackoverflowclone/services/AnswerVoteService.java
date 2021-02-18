@@ -7,10 +7,12 @@ import br.com.stackoverflowclone.request.AnswerVoteOperationCreate;
 import br.com.stackoverflowclone.request.AnswerVoteUpdate;
 import br.com.stackoverflowclone.response.AnswerVoteResponseDTO;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 public interface AnswerVoteService {
     List<AnswerVote> findBy(Long questionId, Long userId);
-    AnswerVoteResponseDTO createVoteAnswer(Question question, Answer answer, AnswerVoteOperationCreate answerVoteCreate);
-    AnswerVoteResponseDTO updateVoteAnswer(Question question, Answer answer, AnswerVoteUpdate answerVoteUpdate);
+    @Transactional
+    AnswerVoteResponseDTO createVoteAnswer(Long questionId, Long answerId, AnswerVoteOperationCreate answerVoteCreate);
+    AnswerVoteResponseDTO updateVoteAnswer(Long questionId, Long answerId, AnswerVoteUpdate answerVoteUpdate);
 }

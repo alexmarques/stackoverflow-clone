@@ -33,7 +33,7 @@ public class StackoverflowCloneApplication {
         SpringApplication.run(StackoverflowCloneApplication.class, args);
     }
 
-    @Bean
+//    @Bean
     public CommandLineRunner preencherUsuarios(UserRepository userRepository,
                                                QuestionRepository questionRepository,
                                                FlagRepository flagRepository) {

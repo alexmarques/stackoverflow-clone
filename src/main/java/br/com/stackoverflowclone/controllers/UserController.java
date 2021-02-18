@@ -1,4 +1,4 @@
-package br.com.stackoverflowclone.resources;
+package br.com.stackoverflowclone.controllers;
 
 import br.com.stackoverflowclone.request.UserCreate;
 import br.com.stackoverflowclone.request.UserUpdate;
@@ -15,14 +15,14 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-public class UserResource {
+public class UserController {
 
     private static final String DATE_PATTERN = "dd/MM/yyyy";
 
     private final UserService userService;
     private final UserReputationService userReputationService;
 
-    public UserResource(UserService userService, UserReputationService userReputationService) {
+    public UserController(UserService userService, UserReputationService userReputationService) {
         this.userService = userService;
         this.userReputationService = userReputationService;
     }
